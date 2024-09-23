@@ -3,12 +3,35 @@ package application;
 import database.DataBase;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Program {
     public static void main(String[] args) {
-        Connection conn = DataBase.getConnection();
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
 
-        DataBase.closeConnection();
+        try {
+            connection = DataBase.getConnection();
+            statement = connection.createStatement();
 
+            resultSet = statement.executeQuery(
+                    "SELECT * FROM department"
+            );
+
+            while (resultSet.next()) {
+                System.out.println(resultSet.getInt("Id") + " " + resultSet.getString("Name"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            DataBase.closeResultSet(resultSet);
+            DataBase.closeStatement(statement);
+            DataBase.closeConnection();
+        }
     }
 }
